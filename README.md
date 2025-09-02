@@ -1,6 +1,6 @@
 # MCP ADE Server
 
-A Model Context Protocol (MCP) server that provides document extraction capabilities using Anthropic's Agentic Document Extraction (ADE) API. This server allows Claude to extract structured data from PDFs and images using various extraction methods.
+A Model Context Protocol (MCP) server that provides document extraction capabilities using LandingAI's Agentic Document Extraction (ADE) API. This server allows ADE to extract structured data from PDFs and images using various extraction methods.
 
 ## Features
 
@@ -13,7 +13,7 @@ A Model Context Protocol (MCP) server that provides document extraction capabili
 ## Prerequisites
 
 - Python 3.11 or higher
-- Anthropic API key with access to the Vision Agent API
+- LandingAI's API key
 - uv (Python package manager) - [Install uv](https://github.com/astral-sh/uv)
 
 ## Quick Start
@@ -30,7 +30,7 @@ cd mcp-ade-server
 Create a `.env` file in the project root:
 
 ```bash
-VISION_AGENT_API_KEY=your_anthropic_api_key_here
+VISION_AGENT_API_KEY=your_LandingAI_api_key_here
 ```
 
 ### 3. Install Dependencies
@@ -64,7 +64,7 @@ Add the server to your Claude Desktop configuration:
         "mcp-ade-server"
       ],
       "env": {
-        "VISION_AGENT_API_KEY": "your_anthropic_api_key_here"
+        "VISION_AGENT_API_KEY": "your_LandingAI_api_key_here"
       }
     }
   }
@@ -115,7 +115,7 @@ class Invoice(BaseModel):
 
 ## Code Structure Breakdown
 
-### 1. **Imports and Setup (Lines 1-22)**
+### 1. **Imports and Setup**
 ```python
 # Standard imports for typing, async operations, and environment
 from typing import Any, AsyncIterator, Optional, Dict, List, Union
@@ -126,7 +126,7 @@ from mcp.server.fastmcp import FastMCP, Context
 # This prevents unwanted output from interfering with MCP communication
 ```
 
-### 2. **Output Suppression Helper (Lines 24-36)**
+### 2. **Output Suppression Helper**
 ```python
 class SuppressOutput:
     """Context manager to suppress stdout/stderr from agentic-doc library"""
@@ -134,7 +134,7 @@ class SuppressOutput:
     # Prevents library output from breaking MCP protocol
 ```
 
-### 3. **Response Formatting Helper (Lines 38-51)**
+### 3. **Response Formatting Helper**
 ```python
 def _format_raw_response(result: ParsedDocument) -> Dict[str, Any]:
     """Formats extraction results into structured JSON response"""
@@ -143,7 +143,7 @@ def _format_raw_response(result: ParsedDocument) -> Dict[str, Any]:
     # - chunks: List of text chunks with metadata (type, content, page, bounding box)
 ```
 
-### 4. **Environment Setup (Lines 53-58)**
+### 4. **Environment Setup**
 ```python
 def load_environment_variables() -> None:
     """Loads API key from .env file"""
@@ -151,13 +151,13 @@ def load_environment_variables() -> None:
     # Raises error if missing
 ```
 
-### 5. **MCP Server Initialization (Lines 59-67)**
+### 5. **MCP Server Initialization**
 ```python
 # Sets up FastMCP server with lifecycle management
 mcp = FastMCP("ade-server", lifespan=app_lifespan)
 ```
 
-### 6. **Tool: Raw Chunk Extraction (Lines 69-81)**
+### 6. **Tool: Raw Chunk Extraction**
 ```python
 @mcp.tool()
 async def ade_extract_raw_chunks(ctx: Context, pdf_base64: str) -> str:
@@ -167,7 +167,7 @@ async def ade_extract_raw_chunks(ctx: Context, pdf_base64: str) -> str:
     # Use case: When you need all document content without structure
 ```
 
-### 7. **Tool: File Path Extraction (Lines 83-102)**
+### 7. **Tool: File Path Extraction**
 ```python
 @mcp.tool()
 async def ade_extract_from_path(ctx: Context, path: str) -> str:
@@ -177,7 +177,7 @@ async def ade_extract_from_path(ctx: Context, path: str) -> str:
     # Use case: Processing local documents without encoding
 ```
 
-### 8. **Tool: Pydantic Model Extraction (Lines 104-147)**
+### 8. **Tool: Pydantic Model Extraction**
 ```python
 @mcp.tool()
 async def ade_extract_with_pydantic(ctx: Context, pdf_base64: str, pydantic_model_code: str) -> str:
@@ -188,7 +188,7 @@ async def ade_extract_with_pydantic(ctx: Context, pdf_base64: str, pydantic_mode
     # Use case: Type-safe extraction with validation
 ```
 
-### 9. **Tool: JSON Schema Validation (Lines 149-191)**
+### 9. **Tool: JSON Schema Validation**
 ```python
 @mcp.tool()
 async def ade_validate_json_schema(ctx: Context, schema: Dict[str, Any]) -> str:
@@ -201,7 +201,7 @@ async def ade_validate_json_schema(ctx: Context, schema: Dict[str, Any]) -> str:
     # Use case: Pre-validate schemas before extraction
 ```
 
-### 10. **Tool: JSON Schema Extraction (Lines 193-222)**
+### 10. **Tool: JSON Schema Extraction**
 ```python
 @mcp.tool()
 async def ade_extract_with_json_schema(ctx: Context, pdf_base64: str, schema: Dict[str, Any]) -> str:
@@ -212,7 +212,7 @@ async def ade_extract_with_json_schema(ctx: Context, pdf_base64: str, schema: Di
     # Use case: Flexible extraction without Python models
 ```
 
-### 11. **Main Entry Point (Lines 224-226)**
+### 11. **Main Entry Point**
 ```python
 if __name__ == "__main__":
     load_environment_variables()  # Load API key
@@ -236,6 +236,15 @@ if __name__ == "__main__":
    - Ensure PDFs are properly base64-encoded
    - Check file paths are absolute, not relative
    - Validate JSON schemas before use
+
+4. **MCP server not attaching to Claude**
+   - Check the directory of uv using `which uv`
+   - Ensure in the Claude config file the uv command path matches the output from `which uv`
+
+5. **MCP server not starting**
+   - Ensure both `agentic-doc` and `mcp` packages are installed
+   - `agentic-doc` is required for LandingAI's ADE functionality
+   - `mcp` is required for the MCP server framework
 
 ## License
 
