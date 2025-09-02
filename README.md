@@ -102,6 +102,44 @@ class Invoice(BaseModel):
 # Use ade_extract_with_pydantic with the model code and PDF
 ```
 
+### Validate JSON Schema
+```json
+# Example schema to validate
+{
+  "type": "object",
+  "properties": {
+    "invoice": {
+      "type": "object",
+      "properties": {
+        "number": {"type": "string"},
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": {"type": "string"},
+              "amount": {"type": "number"}
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+# Use ade_validate_json_schema with the schema above
+# Returns: ✅ Schema is valid according to ADE documentation rules.
+
+# Example of invalid schema
+{
+  "type": "object",
+  "allOf": [{"properties": {"name": {"type": "string"}}}]
+}
+
+# Returns: ❌ Schema validation failed:
+# - Rule Broken: Prohibited keyword 'allOf' found at path 'root.allOf'.
+```
+
 ### Extract with JSON Schema
 ```json
 {
