@@ -99,7 +99,7 @@ class Invoice(BaseModel):
     total_amount: float
     date: str
 
-# Use ade_extract_with_pydantic with the model code and PDF
+# Use ade_extract_with_pydantic with the model code and PDF or image files.
 ```
 
 ### Validate JSON Schema
