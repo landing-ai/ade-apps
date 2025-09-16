@@ -21,7 +21,7 @@ A Model Context Protocol (MCP) server that provides document extraction capabili
 ### 1. Clone the Repository
 
 ```bash
-git clone 
+git clone https://github.com/landing-ai/ade-apps/tree/main/mcp_ade_server
 cd mcp-ade-server
 ```
 
