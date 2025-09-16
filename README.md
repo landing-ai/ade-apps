@@ -63,9 +63,6 @@ Add the server to your Claude Desktop configuration:
         "run",
         "mcp-ade-server"
       ],
-      "env": {
-        "VISION_AGENT_API_KEY": "your_LandingAI_api_key_here"
-      }
     }
   }
 }
